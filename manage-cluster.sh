@@ -1,0 +1,1 @@
+KUBECONFIG=ansible/config kubectl $*

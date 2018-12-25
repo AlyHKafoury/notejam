@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: "mysql"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mariadb 
+        command:
+          - bash
+          - -c
+        args:  
+          - |
+              apt update; 
+              apt install dnsutils gettext -y;
+              export CLUSTER_IPS=$(nslookup mysql | grep Address | egrep -oh '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | paste -s -d,);
+              export NODE_NAME=$(hostname);
+              export NODE_IP=$(hostname -I);
+              mkdir -p /etc/mysql/conf.d/; 
+              envsubst < /etc/galera.d/galera.cnf > /etc/mysql/conf.d/galera.cnf;
+              sleep 10000;
+        ports:
+        - containerPort: 3306
+          name: mysql-port
+        volumeMounts:
+        - name: mysql-local-claim
+          mountPath: /var/lib/mysql
+        - name: mysql-galera
+          mountPath: /etc/galera.d
+      volumes:
+        - name: mysql-galera
+          configMap:
+            name: mysql-galera
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-local-claim
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: local-storage
+      resources:
+        requests:
+          storage: 10Gi

@@ -1,0 +1,22 @@
+---
+# tasks file for post-kube
+- name: Label nodes
+  command: kubectl label nodes "{{ item }}" node_name="{{ item }}"
+  with_items: "{{ groups.all }}"  
+  ignore_errors: yes
+  when: inventory_hostname == 'master'
+
+- name: Create data folder
+  file:
+    path: /data
+    state: directory
+
+- name: Create Directory structure
+  file:
+    path: /data/{{ item }}
+    state: directory
+  loop:
+   - certs 
+   - auth
+   - docker
+   - mysql

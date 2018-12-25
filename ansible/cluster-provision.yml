@@ -1,0 +1,5 @@
+- name: Cluster Provision
+  hosts: all
+  become: true
+  roles:
+  - post-kube

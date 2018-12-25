@@ -78,3 +78,4 @@
 
 - name: Enable pods on Master
   command: 'kubectl taint nodes --all node-role.kubernetes.io/master-'
+  ignore_errors: yes
