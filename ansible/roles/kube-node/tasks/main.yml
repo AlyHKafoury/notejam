@@ -1,0 +1,32 @@
+---
+# tasks file for kube-node
+- name: IPv6 Bridge
+  sysctl: 
+    name: net.bridge.bridge-nf-call-ip6tables 
+    value: 1 
+    state: present 
+    reload: yes 
+    sysctl_set: yes
+
+- name: IPv4 Bridge
+  sysctl: 
+    name: net.bridge.bridge-nf-call-iptables 
+    value: 1 
+    state: present 
+    reload: yes 
+    sysctl_set: yes
+
+- name: Copy join script
+  copy:
+    src: ./kubeadm-join.sh
+    dest: /etc/kubeadm-join.sh
+
+- name: Join Cluster
+  shell: >
+     systemctl stop kubelet ; kubeadm reset -f;
+     bash /etc/kubeadm-join.sh
+  args:
+    creates: /etc/joined
+
+- name: Successfully Joined Cluster...!!!
+  command: touch /etc/joined

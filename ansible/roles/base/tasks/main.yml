@@ -1,0 +1,11 @@
+---
+# tasks file for base
+- name: Set hostname
+  hostname: 
+    name: "{{ node_name }}"
+
+- name: Add hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item.line  }}"
+  with_items: "{{ machine_ips }}"

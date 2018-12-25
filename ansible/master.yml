@@ -1,0 +1,7 @@
+- name: Master
+  hosts: all
+  become: true
+  roles:
+   - base
+   - kube-base
+   - kube-master

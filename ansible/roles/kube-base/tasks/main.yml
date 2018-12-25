@@ -1,0 +1,95 @@
+---
+# tasks file for kube-base
+- name: Update cache and install base
+  apt:
+    name: "{{ item.package_name }}"
+    update_cache: yes
+  with_items:
+    - { package_name: apt-transport-https }
+    - { package_name: ca-certificates }
+    - { package_name: curl }
+    - { package_name: software-properties-common }
+
+- name: Add kubernetes Key
+  command: bash -c "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -"
+
+- name: Add kubernetes Repo
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main 
+    state: present
+
+- name: Install Docker and kubernetes
+  apt: 
+    name: "{{ item.name }}" 
+    state: present 
+    update_cache: yes
+    allow_unauthenticated: yes
+  with_items:
+    - { name: "docker.io" }
+    - { name: "kubelet" }
+    - { name: "kubeadm" }
+    - { name: "kubectl" }
+    - { name: "ntp" }
+
+- name: Ensure Docker Service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: adding existing user vagrant to group docker
+  user:
+    name: vagrant
+    groups: docker
+    append: yes
+
+- name: Enable and start ntp service 
+  service: 
+    name: ntp 
+    state: started 
+    enabled: yes
+
+- name: Enable and start kubelet service
+  service: 
+    name: kubelet 
+    state: started 
+    enabled: yes
+
+- name: IPv4 forwarding
+  sysctl: 
+    name: net.ipv4.ip_forward 
+    value: 1 
+    state: present 
+    reload: yes 
+    sysctl_set: yes
+
+- name: Enable kernel modules
+  command: modprobe "{{ item.name }}"
+  with_items:    
+   - { name: "ip_vs" }
+   - { name: "ip_vs_rr" }
+   - { name: "ip_vs_wrr" }
+   - { name: "ip_vs_sh" }
+   - { name: "nf_conntrack_ipv4" }
+
+- name: Set kernel modules
+  lineinfile: 
+    path: /etc/modules 
+    line: "{{ item.name }}" 
+    create: yes 
+    state: present
+  with_items:
+   - { name: "ip_vs" }
+   - { name: "ip_vs_rr" }
+   - { name: "ip_vs_wrr" }
+   - { name: "ip_vs_sh" }
+   - { name: "nf_conntrack_ipv4" }
+
+- name: Disable swap
+  command: swapoff -a
+
+- name: Remove swap mounts
+  lineinfile:
+    path: /etc/fstab
+    regexp: 'swap'
+    state: absent

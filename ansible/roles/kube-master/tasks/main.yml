@@ -1,0 +1,80 @@
+---
+# tasks file for kube-master
+- name: Enable IPv6 forwarding to iptables
+  lineinfile: 
+    dest: /etc/sysctl.conf 
+    line: 'net.bridge.bridge-nf-call-ip6tables = 1' 
+    state: present
+
+- name: Enable IPv4 forwarding to iptables 
+  lineinfile: 
+    dest: /etc/sysctl.conf 
+    line: 'net.bridge.bridge-nf-call-iptables = 1' 
+    state: present
+
+- name: Initialize kube
+  shell: >
+       kubeadm reset -f &&
+       sysctl -p &&
+       kubeadm init --apiserver-advertise-address=10.0.1.2 --pod-network-cidr=192.168.0.0/16
+  args:
+    creates: /etc/kubeadm-join.sh
+  register: kubeadm_out
+
+- name: Create Join file
+  lineinfile:
+    path: /etc/kubeadm-join.sh
+    line: "{{ kubeadm_out.stdout_lines[-1] }}"
+    create: yes
+  when: kubeadm_out.stdout.find("kubeadm join") != -1
+
+- name: Ensure kublet service still enabled
+  service: 
+    name: kubelet 
+    state: started 
+    enabled: yes
+
+- name: Create config directory
+  file:
+    state: directory
+    path: /root/.kube
+
+- name: Set kubectl config
+  command: bash -c "\cp -f /etc/kubernetes/admin.conf /root/.kube/config"
+
+- name: Get join command
+  fetch:
+    src: /etc/kubeadm-join.sh 
+    dest: ./kubeadm-join.sh
+    flat: yes
+
+- name: Get configs
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: ./config
+    flat: yes
+
+- name: Set Bridge IPv6
+  sysctl: 
+    name: net.bridge.bridge-nf-call-ip6tables 
+    value: 1 
+    state: present 
+    reload: yes 
+    sysctl_set: yes
+
+- name: Set Bridge IPv4
+  sysctl: 
+    name: net.bridge.bridge-nf-call-iptables 
+    value: 1 
+    state: present 
+    reload: yes 
+    sysctl_set: yes
+
+- name: Apply rbac
+  command: kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
+
+- name: Apply Calcio
+  command: kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
+
+- name: Enable pods on Master
+  command: 'kubectl taint nodes --all node-role.kubernetes.io/master-'

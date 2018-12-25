@@ -1,0 +1,7 @@
+- name: "{{ node_name }}" 
+  hosts: all
+  become: true
+  roles:
+   - base
+   - kube-base
+   - kube-node
