@@ -29,4 +29,6 @@
     creates: /etc/joined
 
 - name: Successfully Joined Cluster...!!!
-  command: touch /etc/joined
+  file:
+    state: touch
+    path: /etc/joined

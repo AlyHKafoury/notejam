@@ -53,3 +53,4 @@ bower_components
 *.phar
 
 .vagrant
+*.retry
