@@ -22,16 +22,44 @@ spec:
         args:  
           - |
               apt update; 
-              apt install dnsutils gettext -y;
+              apt install dnsutils gettext sudo -y;
               export CLUSTER_IPS=$(nslookup mysql | grep Address | egrep -oh '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | paste -s -d,);
               export NODE_NAME=$(hostname);
               export NODE_IP=$(hostname -I);
               mkdir -p /etc/mysql/conf.d/; 
               envsubst < /etc/galera.d/galera.cnf > /etc/mysql/conf.d/galera.cnf;
-              sleep 10000;
+              chown mysql:mysql -R /etc/mysql/;
+              chown mysql:mysql -R /var/lib/mysql
+              HOST_NUMBER=$(hostname | egrep -oh '.$');
+              if [ -z $CLUSTER_IPS ]; then
+                  sed -e "s/safe_to_bootstrap: 0/safe_to_bootstrap: 1/g" -i /var/lib/mysql/grastate.dat; 
+                  docker-entrypoint.sh mysqld --wsrep-new-cluster;
+              fi
+              docker-entrypoint.sh mysqld;
+              sleep 10000
+        env:
+         - name: MYSQL_ALLOW_EMPTY_PASSWORD
+           value: "yes"
+         - name: MYSQL_INITDB_SKIP_TZINFO
+           value: "yes"
+        readinessProbe:
+          exec:
+            command:
+             - mysql
+             - -u
+             - root
+             - -e
+             - "SHOW STATUS LIKE 'wsrep_cluster_size'"
+          initialDelaySeconds: 60
+          periodSeconds: 10
         ports:
         - containerPort: 3306
           name: mysql-port
+        - containerPort: 4567
+        - containerPort: 4568
+        - containerPort: 4444
+        - containerPort: 4567
+          protocol: "UDP"
         volumeMounts:
         - name: mysql-local-claim
           mountPath: /var/lib/mysql

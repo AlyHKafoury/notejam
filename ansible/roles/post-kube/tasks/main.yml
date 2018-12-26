@@ -11,6 +11,16 @@
     path: /data
     state: directory
 
+- name: Clean Directory structure
+  file:
+    path: /data/{{ item }}
+    state: absent
+  loop:
+   - certs 
+   - auth
+   - docker
+   - mysql
+
 - name: Create Directory structure
   file:
     path: /data/{{ item }}

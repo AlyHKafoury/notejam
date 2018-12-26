@@ -17,12 +17,13 @@ data:
    wsrep_provider=/usr/lib/galera/libgalera_smm.so
  
    # Galera Cluster Configuration
-   wsrep_cluster_name="test_cluster"
+   wsrep_cluster_name="galera_cluster"
    wsrep_cluster_address="gcomm://${CLUSTER_IPS}"
  
    # Galera Synchronization Configuration
    wsrep_sst_method=rsync
- 
+   wsrep_provider_options="gcache.size=128Mb"
+   wsrep_provider_options="gcache.recover=yes"
    # Galera Node Configuration
    wsrep_node_address="${NODE_IP}"
    wsrep_node_name="${NODE_NAME}" 
