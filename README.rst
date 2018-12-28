@@ -1,25 +1,18 @@
-****************
-Notejam: Express
-****************
+**********************
+Notejam: Ruby on Rails
+**********************
 
-Notejam application implemented using `Express.js <http://expressjs.com/>`_ microframework.
+Notejam application implemented using `Ruby on Rails <http://rubyonrails.org/>`_ framework.
 
-Express version: 4.2
-
-Middlewares/extentions used:
-
-* `Passport.js <http://passportjs.org/>`_ for authentication
-* `Node ORM 2 <https://github.com/dresende/node-orm2>`_ for database
-* `Mocha <http://mochajs.org/>`_ and `Superagent <http://visionmedia.github.io/superagent/>`_ for testing
-* ... and `others <https://github.com/komarserjio/notejam/blob/express/express/notejam/package.json>`_
+Ruby on Rails version: 4.2.5
 
 ==========================
 Installation and launching
 ==========================
 
--------
-Cloning
--------
+-----
+Clone
+-----
 
 Clone the repo:
 
@@ -27,57 +20,64 @@ Clone the repo:
 
     $ git clone git@github.com:komarserjio/notejam.git YOUR_PROJECT_DIR/
 
--------------------
-Install environment
--------------------
-Use `npm <https://www.npmjs.org/>`_ to manage dependencies.
+-------
+Install
+-------
 
-Install dependencies
+Use `RVM <https://rvm.io/>`_ or `rbenv <https://github.com/sstephenson/rbenv>`_
+for environment management.
 
-.. code-block:: bash
-
-    $ cd YOUR_PROJECT_DIR/express/notejam/
-    $ npm install
-
-Create database schema
+Install dependencies:
 
 .. code-block:: bash
 
-    $ cd YOUR_PROJECT_DIR/express/notejam/
-    $ node db.js
+    $ cd YOUR_PROJECT_DIR/rubyonrails/notejam/
+    $ bundle install
+
+Create database schema:
+
+.. code-block:: bash
+
+    $ cd YOUR_PROJECT_DIR/rubyonrails/notejam/
+    $ rake db:migrate
+
 
 ------
 Launch
 ------
 
+
 Start built-in web server:
 
 .. code-block:: bash
 
-    $ cd YOUR_PROJECT_DIR/express/notejam/
-    $ DEBUG=* ./bin/www
+    $ cd YOUR_PROJECT_DIR/rubyonrails/notejam/
+    $ rails server
 
-Go to http://127.0.0.1:3000/ in your browser
+Go to http://127.0.0.1:3000/ in your browser.
 
-------------------
-Running unit tests
-------------------
 
-Run unit tests:
+---------
+Run tests
+---------
+
+Start functional and unit tests:
 
 .. code-block:: bash
 
-    $ cd YOUR_PROJECT_DIR/express/notejam/
-    $ ./node_modules/mocha/bin/mocha tests
+    $ cd YOUR_PROJECT_DIR/rubyonrails/notejam/
+    $ rake test
 
 ============
 Contribution
 ============
+Do you have ruby/rails experience? Help the app to follow ruby and rails best practices.
 
 Please send your pull requests in the ``master`` branch.
-
-Always prepend your commits with a framework name:
+Always prepend your commits with framework name:
 
 .. code-block:: bash
 
-    Express: Implemented sign in functionality
+    Rubyonrails: Implemented sign in functionality
+
+Read `contribution guide <https://github.com/komarserjio/notejam/blob/master/contribute.rst>`_ for details.
