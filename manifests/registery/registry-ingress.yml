@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: test-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  backend:
+    serviceName: default-backend
+    servicePort: 80
+  rules:
+  - host: docker.notejam.jam
+    http:
+      paths:
+        backend:
+          serviceName: docker-registry
+          servicePort: 5000

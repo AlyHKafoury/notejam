@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: docker-registry
+spec:
+  serviceName: "docker-registry"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docker-registry
+  template:
+    metadata:
+      labels:
+        app: docker-registry
+    spec:
+      containers:
+      - name: docker-registry
+        image: registry:2 
+        env:
+        #  - name: REGISTRY_HTTP_ADDR
+        #    value: '0.0.0.0:5000'
+        #  - name: REGISTRY_AUTH
+        #    value: "htpasswd"
+        #  - name: REGISTRY_AUTH_HTPASSWD_REALM
+        #    value: Registry Realm
+        #  - name: REGISTRY_AUTH_HTPASSWD_PATH
+        #    value: /auth/htpasswd
+        #  - name: REGISTRY_HTTP_TLS_CERTIFICATE
+        #    value: /auth/domain.crt
+        #  - name: REGISTRY_HTTP_TLS_KEY
+        #    value: /auth/domain.key
+        ports:
+        - containerPort: 5000
+          name: registry-port
+        volumeMounts:
+        - name: registry-local-claim
+          mountPath: /var/lib/registry
+      #   - name: registry-secret
+      #     mountPath: /auth
+      # volumes:
+      #   - name: registry-secret
+      #     secret:
+      #       secretName: registry-secret
+  volumeClaimTemplates:
+  - metadata:
+      name: registry-local-claim
+    spec:
+      selector:
+        matchLabels:
+          pv-type: registry
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: local-storage
+      resources:
+        requests:
+          storage: 5Gi
