@@ -20,6 +20,7 @@
    - auth
    - docker
    - mysql
+  when: clean == 'true'
 
 - name: Create Directory structure
   file:
@@ -30,3 +31,42 @@
    - auth
    - docker
    - mysql
+
+- name: Install haproxy
+  apt:
+    name: haproxy
+  when: inventory_hostname == 'master'
+
+- name: Remove old config
+  command: bash -c 'mv /etc/haproxy/haproxy.cfg{,.original}'
+  args:
+    creates: /etc/haproxy/haproxy.original
+  when: inventory_hostname == 'master'
+
+- name: Configure haproxy
+  copy:
+    src: haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+  when: inventory_hostname == 'master'
+
+- file:
+    dest: /etc/ssl/private
+    state: directory
+
+- name: Copy SSL certs
+  copy:
+    src : "{{ item }}"
+    dest: /etc/ssl/private/{{ item }}
+    owner: haproxy
+    group: haproxy
+  loop:
+    - domain.key
+    - domain.crt
+    - ca.pem
+
+- name: enable haproxy
+  service:
+    name: haproxy
+    state: restarted
+    enabled: yes
+  when: inventory_hostname == 'master'

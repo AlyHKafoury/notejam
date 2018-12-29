@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notejam-app
+  labels:
+    app: notejam-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: notejam-app
+  strategy:
+    type: RollingUpdate  
+  template:
+    metadata:
+      labels:
+        app: notejam-app
+    spec:
+      containers:
+      - name: notejam-app
+        image: docker-registry:31000/notejam-app:latest
+        readinessProbe:
+          exec:
+            command:
+             - curl
+             - localhost:3000
+        ports:
+        - containerPort: 3000

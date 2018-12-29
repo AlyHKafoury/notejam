@@ -9,3 +9,20 @@
     path: /etc/hosts
     line: "{{ item.line  }}"
   with_items: "{{ machine_ips }}"
+
+- name: Validate Docker registry
+  lineinfile:
+    path: /etc/docker/daemon.json
+    line: '{ "insecure-registries" : ["docker-registry:5000", "docker-registry:31000"] }'
+    state: present
+    create: yes
+
+- name: Add Registry host
+  lineinfile:
+    path: /etc/hosts
+    line: "10.0.1.2 docker-registry"
+
+- name: Add App host
+  lineinfile:
+    path: /etc/hosts
+    line: "10.0.1.2 notejam.jam"
