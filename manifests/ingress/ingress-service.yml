@@ -5,6 +5,7 @@ metadata:
   namespace: nginx-ingress
 spec:
   externalTrafficPolicy: Local
+  sessionAffinity: ClientIP
   type: NodePort 
   ports:
   - port: 80

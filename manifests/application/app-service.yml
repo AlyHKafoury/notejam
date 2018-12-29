@@ -5,6 +5,7 @@ metadata:
   labels:
     app: notejam-app
 spec:
+  sessionAffinity: ClientIP
   ports:
   - port: 3000
     name: notejam-app
