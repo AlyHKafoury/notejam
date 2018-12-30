@@ -20,6 +20,7 @@
    - auth
    - docker
    - mysql
+   - jenkins
   when: clean == 'true'
 
 - name: Create Directory structure
@@ -31,7 +32,13 @@
    - auth
    - docker
    - mysql
+   - jenkins
 
+- file:
+    path: /data/jenkins
+    owner: 1000
+    group: 1000
+  
 - name: Install haproxy
   apt:
     name: haproxy
@@ -63,7 +70,21 @@
     - domain.key
     - domain.crt
     - ca.pem
+  when: inventory_hostname == 'master'
 
+- name: Copy haproxy logging config
+  copy:
+    src: haproxy_log.conf
+    dest: /etc/rsyslog.d/haproxy.conf
+  when: inventory_hostname == 'master'
+
+- name: Restart rsyslog
+  service:
+    name: rsyslog
+    state: restarted
+    enabled: yes
+  when: inventory_hostname == 'master'
+  
 - name: enable haproxy
   service:
     name: haproxy

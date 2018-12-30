@@ -1,1 +1,3 @@
-ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory ansible/cluster-provision.yml --extra-vars "$@"
+./scripts/post-kube.sh clean=false
+# ./helm.sh init --service-account tiller
+# ./helm.sh install --name jenkins --namespace default stable/jenkins -f helm/jenkins/values.yml

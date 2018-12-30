@@ -9,10 +9,17 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-name: "route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
 spec:
+  backend:
+    serviceName: default-backend
+    servicePort: 80
   rules:
   - host: notejam.jam
     http:
       paths:
+       - backend:
+            serviceName: jenkins
+            servicePort: 8080
+         path: /jenkins 
        - backend:
            serviceName: notejam-app-service
            servicePort: 3000
