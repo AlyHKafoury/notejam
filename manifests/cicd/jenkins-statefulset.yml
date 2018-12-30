@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jenkins
+spec:
+  serviceName: "jenkins"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts
+        command: 
+        - bash
+        - -c
+        args: 
+        - |
+            echo $(whoami);
+            /usr/local/bin/install-plugins.sh ssh-slaves;
+            /usr/local/bin/install-plugins.sh kubernetes;
+            /usr/local/bin/install-plugins.sh workflow-aggregator;
+            /usr/local/bin/install-plugins.sh workflow-job;
+            /usr/local/bin/install-plugins.sh credentials-binding;
+            /usr/local/bin/install-plugins.sh git;
+            /usr/local/bin/install-plugins.sh blueocean;
+            /sbin/tini -- /usr/local/bin/jenkins.sh;
+            sleep 1000000; 
+        env:
+        - name: JENKINS_OPTS
+          value: --prefix=/jenkins
+        # - name: JAVA_OPTS
+        #   value: -Djenkins.install.runSetupWizard=false
+        ports:
+        - containerPort: 8080
+          name: jenkins-port
+        - containerPort: 50000
+          name: j-worker-port
+        volumeMounts:
+        - name: jenkins-local-claim
+          mountPath: /var/jenkins_home
+        readinessProbe:
+          exec:
+            command:
+             - curl
+             - localhost:8080/jenkins
+  volumeClaimTemplates:
+  - metadata:
+      name: jenkins-local-claim
+    spec:
+      selector:
+        matchLabels:
+          pv-type: jenkins
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: local-storage
+      resources:
+        requests:
+          storage: 10Gi
