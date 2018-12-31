@@ -1,7 +1,7 @@
 export RAILS_ENV=test
 export RAILS_TEST_DB_NAME=notejam_test
 export RAILS_TEST_DB_USER=root
-export RAILS_TEST_DB_HOST=mysql
+export RAILS_TEST_DB_HOST=mysql-test
 rake db:test:prepare
 rake test:prepare
 rake db:drop db:create db:migrate
