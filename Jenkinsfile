@@ -3,9 +3,6 @@ def label = "worker-${UUID.randomUUID().toString()}"
 podTemplate(label: label, containers: [
   containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
   containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true),
-  containerTemplate(name: 'mysql_test', image: 'mariadb', command: 'cat', ttyEnabled: true,
-    envVars: [envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'yes')]
-  ),
 ],
 volumes: [
   hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
@@ -41,9 +38,7 @@ volumes: [
     }
     stage('Test Image') {
         podTemplate(label: label, containers: [
-        containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
-        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true),
-        containerTemplate(name: 'mysql_test', image: 'mariadb', command: 'cat', ttyEnabled: true,
+        containerTemplate(name: 'mysql-test', image: 'mariadb', command: 'cat', ttyEnabled: true,
             envVars: [envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'yes')]
         ),
         ],
