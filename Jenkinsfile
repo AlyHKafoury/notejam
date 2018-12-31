@@ -3,9 +3,9 @@ def label = "worker-${UUID.randomUUID().toString()}"
 podTemplate(label: label, containers: [
   containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
   containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true),
-  containerTemplate(name: 'mysql', image: 'mariadb', command: 'cat', ttyEnabled: true,
-    envVars: [envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'yes')]
-  ),
+//   containerTemplate(name: 'mysql', image: 'mariadb', command: 'cat', ttyEnabled: true,
+//     envVars: [envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'yes')]
+//   ),
 ],
 volumes: [
   hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
@@ -42,8 +42,10 @@ volumes: [
     stage('Test Image') {
       container('docker') {
           sh    """
+                docker run -d --name mysql_test mariadb -e MYSQL_ALLOW_EMPTY_PASSWORD=yes
                 docker run \
                 -e RAILS_ENV=test \
+                --link mysql_test \
                 docker-registry:31000/notejam:${gitCommit} \
                 bash /app/test.sh
                 """
