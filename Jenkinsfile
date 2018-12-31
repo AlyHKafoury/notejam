@@ -39,8 +39,9 @@ volumes: [
     stage('Test Image') {
       container('docker') {
           sh    """
-                docker run docker-registry:31000/notejam-${gitCommit} \
-                -e RAILS_ENV=testing \
+                docker run \
+                -e RAILS_ENV=test \
+                docker-registry:31000/notejam:${gitCommit} \
                 rake test
                 """
         }
