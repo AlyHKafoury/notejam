@@ -56,7 +56,9 @@ volumes: [
                 sh """
                     echo success
                     """
-            }            
+                    }            
+                }
+            }
         }
     }
     stage('Deploy Image to production') {
