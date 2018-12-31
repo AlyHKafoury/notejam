@@ -1,5 +1,5 @@
 def label = "worker-${UUID.randomUUID().toString()}"
-
+def gitCommit = ""
 podTemplate(label: label, containers: [
   containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
   containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true),
@@ -9,7 +9,7 @@ volumes: [
 ]) {
   node(label) {
     def myRepo = checkout scm
-    def gitCommit = myRepo.GIT_COMMIT
+    gitCommit = myRepo.GIT_COMMIT
     def gitBranch = myRepo.GIT_BRANCH
  
     stage('Set Env') {
