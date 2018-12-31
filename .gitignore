@@ -54,3 +54,4 @@ bower_components
 
 .vagrant
 *.retry
+client.key

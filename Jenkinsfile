@@ -12,7 +12,7 @@ volumes: [
     def gitCommit = myRepo.GIT_COMMIT
     def gitBranch = myRepo.GIT_BRANCH
  
-    stage('Test') {
+    stage('Set Env') {
       try {
         container('docker') {
           sh """
@@ -22,14 +22,18 @@ volumes: [
             """
         }
       }
-      catch (exc) {
+      catch (enverror) {
         println "Failed to test - ${currentBuild.fullDisplayName}"
-        throw(exc)
+        throw(enverror)
       }
     }
     stage('Build') {
       container('docker') {
-        sh "echo hello"
+          sh """
+            cd notejam;
+            docker build . -t docker-registery:5000/notejam-${gitCommit};
+            docker push docker-registery:5000/notejam-${gitCommit};
+            """
       }
     }
     stage('Create Docker images') {
