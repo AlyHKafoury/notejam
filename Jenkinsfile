@@ -30,25 +30,24 @@ volumes: [
     stage('Build') {
       container('docker') {
           sh """
-            mkdir -p /etc/docker/;
-            echo '{ "insecure-registries" : ["docker-registry:5000", "docker-registry:31000"] }' > /etc/docker/daemon.json;
             cd notejam;
-            docker build . -t docker-registery:5000/notejam-${gitCommit};
-            docker push docker-registery:5000/notejam-${gitCommit};
+            docker build . -t docker-registry:31000/notejam:${gitCommit};
+            docker push docker-registry:31000/notejam:${gitCommit};
             """
       }
     }
-    stage('Create Docker images') {
+    stage('Test Image') {
       container('docker') {
           sh    """
-                ls -al
-                echo $PWD
+                docker run docker-registry:31000/notejam-${gitCommit} \
+                -e RAILS_ENV=testing \
+                rake test
                 """
         }
     }
-    stage('Run kubectl') {
+    stage('Deploy Image to production') {
       container('kubectl') {
-        sh "kubectl get pods"
+        sh "kubectl.sh set image deployment notejam-app notejam-app=docker-registry:31000/notejam:${gitCommit}"
       }
     }
   }
