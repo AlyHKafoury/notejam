@@ -61,7 +61,7 @@ node(label) {
     }
     stage('Deploy Image to production') {
         container('kubectl') {
-            //sh "kubectl set image deployment notejam-app notejam-app=docker-registry:31000/notejam:${gitCommit}"
+            sh "kubectl set image deployment notejam-app notejam-app=docker-registry:31000/notejam:${gitCommit}"
             }
         }
     }
