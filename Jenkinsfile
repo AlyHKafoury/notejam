@@ -42,7 +42,7 @@ volumes: [
                 docker run \
                 -e RAILS_ENV=test \
                 docker-registry:31000/notejam:${gitCommit} \
-                /app/test.sh
+                bash /app/test.sh
                 """
         }
     }
