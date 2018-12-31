@@ -50,8 +50,9 @@ volumes: [
 
 podTemplate(label: label, containers: [
 containerTemplate(name: 'app', image: "docker-registry:31000/notejam:${gitCommit}", command: 'cat', ttyEnabled: true),
-containerTemplate(name: 'mysql-test', image: 'mariadb', command: 'cat', ttyEnabled: true,
-    envVars: [envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'yes')]
+containerTemplate(name: 'mariadb', image: 'mariadb', command: 'cat', ttyEnabled: true,
+    envVars: [envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'yes')],
+    ports: [portMapping(name: 'mysql', containerPort: 3306, hostPort: 3306)]
 ),
 ],
 volumes: [
