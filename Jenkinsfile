@@ -41,7 +41,7 @@ volumes: [
     }
     stage('Deploy Image to production') {
       container('kubectl') {
-        sh "kubectl.sh set image deployment notejam-app notejam-app=docker-registry:31000/notejam:${gitCommit}"
+        //sh "kubectl set image deployment notejam-app notejam-app=docker-registry:31000/notejam:${gitCommit}"
       }
     }
   }
@@ -56,7 +56,7 @@ containerTemplate(name: 'mysql-test', image: 'mariadb', command: 'cat', ttyEnabl
 volumes: [
 hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
 ]) {
-node("Testing-${gitCommit}") {
+node(label) {
     stage('Build') {
     container('docker') {
         sh """
