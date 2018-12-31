@@ -30,6 +30,8 @@ volumes: [
     stage('Build') {
       container('docker') {
           sh """
+            mkdir -p /etc/docker/;
+            echo '{ "insecure-registries" : ["docker-registry:5000", "docker-registry:31000"] }' > /etc/docker/daemon.json;
             cd notejam;
             docker build . -t docker-registery:5000/notejam-${gitCommit};
             docker push docker-registery:5000/notejam-${gitCommit};
