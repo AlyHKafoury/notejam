@@ -6,8 +6,11 @@ metadata:
     app: jenkins
 spec:
   sessionAffinity: ClientIP
+  clusterIP: None
   ports:
   - port: 8080
     name: jenkins-port
+  - port: 50000
+    name: j-slave-port
   selector:
     app: jenkins
