@@ -62,7 +62,8 @@ node(label) {
     stage('Build') {
     container('app') {
         sh """
-            bash /app/test.sh
+            cd /app
+            bash test.sh
             """
             }            
         }
