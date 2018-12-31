@@ -37,24 +37,7 @@ volumes: [
       }
     }
     stage('Test Image') {
-        podTemplate(label: label, containers: [
-        containerTemplate(name: 'mysql-test', image: 'mariadb', command: 'cat', ttyEnabled: true,
-            envVars: [envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'yes')]
-        ),
-        ],
-        volumes: [
-        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
-        ]) {
-        node("Testing-${gitCommit}") {
-            stage('Build') {
-            container('docker') {
-                sh """
-                    echo success
-                    """
-                    }            
-                }
-            }
-        }
+
     }
     stage('Deploy Image to production') {
       container('kubectl') {
@@ -62,4 +45,24 @@ volumes: [
       }
     }
   }
+}
+
+podTemplate(label: label, containers: [
+containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
+containerTemplate(name: 'mysql-test', image: 'mariadb', command: 'cat', ttyEnabled: true,
+    envVars: [envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'yes')]
+),
+],
+volumes: [
+hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+]) {
+node("Testing-${gitCommit}") {
+    stage('Build') {
+    container('docker') {
+        sh """
+            echo success
+            """
+            }            
+        }
+    }
 }
