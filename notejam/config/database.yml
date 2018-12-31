@@ -22,6 +22,7 @@ test:
   username: <%= ENV["RAILS_TEST_DB_USER"] %>
   password: <%= ENV["RAILS_TEST_DB_PASSWORD"] %>
   host: <%= ENV["RAILS_TEST_DB_HOST"] %>
+  port: 3306
   pool: 5
   timeout: 5000
 
