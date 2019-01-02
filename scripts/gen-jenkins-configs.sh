@@ -1,3 +1,4 @@
+#!/bin/bash
 echo Kubernetes URL : `./kubectl.sh config view | grep server | cut -f 2- -d ":" | tr -d " "`;
 echo "Kubernetes certificate data key :"
 cat ansible/config | egrep certificate-authority-data: | sed -e 's/certificate-authority-data://g'| tr -d '[[:space:]]' | base64 -d;

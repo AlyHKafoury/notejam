@@ -1,3 +1,4 @@
+#!/bin/bash
 ./scripts/post-kube.sh clean=false;
 ls manifests | xargs -I {} ./kubectl.sh apply -f manifests/{};
 cd notejam;
