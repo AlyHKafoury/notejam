@@ -12,12 +12,15 @@ spec:
     metadata:
       labels:
         app: nginx-ingress
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9113"
     spec:
       nodeSelector:
         node_name: master
       serviceAccountName: nginx-ingress
       containers:
-      - image: nginx/nginx-ingress:edge
+      - image: nginx/nginx-ingress:1.4.2
         imagePullPolicy: Always
         name: nginx-ingress
         ports:
@@ -37,7 +40,17 @@ spec:
         args:
           - -nginx-configmaps=$(POD_NAMESPACE)/nginx-config
           - -default-server-tls-secret=$(POD_NAMESPACE)/default-server-secret
-         #- -v=3 # Enables extensive logging. Useful for trooublshooting.
+         # - -v=2 # Enables extensive logging. Useful for trooublshooting.
          #- -report-ingress-status
          #- -external-service=nginx-ingress
          #- -enable-leader-election
+      - image: nginx/nginx-prometheus-exporter:0.2.0
+        name: nginx-prometheus-exporter
+        ports:
+        - name: prometheus
+          containerPort: 9113
+        args:
+          - -web.listen-address
+          - :9113
+          - nginx.scrape-uri
+          - http://127.0.0.1:8080/stub_status

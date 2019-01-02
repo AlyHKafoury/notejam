@@ -3,13 +3,8 @@ kind: Ingress
 metadata:
   name: notejam-app-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    # nginx.ingress.kubernetes.io/add-base-url: "true"
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "route"
-    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
-    nginx.ingress.kubernetes.io/configuration-snippet: rewrite ^/grafana(.*) /$1;
+    nginx.org/rewrites: "serviceName=grafana rewrite=/;serviceName=kibana rewrite=/;"
 spec:
   backend:
     serviceName: default-backend
@@ -21,15 +16,15 @@ spec:
        - backend:
             serviceName: grafana
             servicePort: 3000
-         path: /grafana
+         path: /grafana/
        - backend:
             serviceName: kibana
             servicePort: 5601
-         path: /app/kibana
+         path: /app/kibana/
        - backend:
             serviceName: jenkins
             servicePort: 8080
-         path: /jenkins 
+         path: /jenkins/
        - backend:
            serviceName: notejam-app-service
            servicePort: 3000

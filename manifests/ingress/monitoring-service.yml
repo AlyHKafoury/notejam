@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: nginx-ingress-monitor
+    app: nginx-ingress
+  namespace: nginx-ingress
+  name: nginx-ingress-monitor
+spec:
+  clusterIP: None
+  ports:
+  - name: nginx-exporter
+    port: 9113
+    targetPort: 9113
+  selector:
+    app: nginx-ingress
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    name: nginx-ingress-monitor
+  name: nginx-ingress-monitor
+spec:
+  endpoints:
+  - interval: 30s
+    port: nginx-exporter
+    scheme: http
+  jobLabel: nginx-ingress-monitor
+  NamespaceSelector:
+    matchNames:
+      - nginx-ingress
+  selector:
+    matchLabels:
+      app: nginx-ingress
