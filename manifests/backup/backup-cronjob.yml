@@ -1,0 +1,25 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: mysql-backup
+spec:
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mysql-backup
+            image: mariadb
+            command:
+            - bash
+            - -c
+            args:
+            - |
+                mysqldump -u root -h mysql --single-transaction --quick --lock-tables=false --all-databases | gzip > db_backup.gz;
+                ls -alh db_backup.gz;
+                echo "uploading to s3 storage";
+          restartPolicy: OnFailure

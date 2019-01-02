@@ -11,3 +11,5 @@ spec:
   endpoints:
   - port: web
     interval: 30s
+  - port: notejam-app
+    interval: 30s
