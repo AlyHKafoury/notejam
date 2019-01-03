@@ -1,6 +1,7 @@
 <% content_for :page_title do %>All notes (<%= @notes.count %>)<% end %>
 <% if @notes.count.nonzero? %>
   <table class="notes">
+	  <h1>I made some changes</h1>
     <tr>
       <th class="note">Note <a href="<%= notes_path + "?order=name" %>" class="sort_arrow">↑</a><a href="<%= notes_path + "?order=-name" %>" class="sort_arrow">↓</a></th>
       <th>Pad</th>
